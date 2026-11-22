@@ -217,7 +217,7 @@ func DefaultParams() Params {
 		HideStick:      12,
 		StealthFightRange: 140,
 		QuietHoldS:        3,
-		LaserValue:        6.0,
+		LaserValue:        8.0, // local sim: +0.10 +/- 0.05 over 900 paired matches vs 6.0
 		LightningValue:    2.6,
 		ArmSwapMin:        1.0,
 		HitModel:          1,
@@ -299,6 +299,7 @@ func DefaultParams() Params {
 		CoverReload:  true,
 		RetreatPest:  true,
 		PracticeRim:  0.6,
+		LightKiteBoost: true,
 	}
 }
 
