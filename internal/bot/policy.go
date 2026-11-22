@@ -148,7 +148,7 @@ func (b *Bot) think(act *proto.Action) {
 			// cornered by one pursuer we cannot shake: shooting back beats being shot in the back
 			b.retreating = false
 			b.corneredT = b.t
-		case b.P.RetreatRunMax > 0 && st.avoid && visibleFoe && b.t-b.retreatT > 0.5 && !b.coverClose(ths, tgt):
+		case b.runGate(st) && visibleFoe && b.t-b.retreatT > 0.5 && !b.coverClose(ths, tgt):
 			// In its sights with nothing to get behind for seconds: in the real matches a hurt mech
 			// still in its attacker's sight 8 s later lived 34% of the time when it stood and shot
 			// back, 24% when it shot back on the run, 10% when it only ran (56% when it got out of
@@ -181,7 +181,7 @@ func (b *Bot) think(act *proto.Action) {
 			// shot by something we have not seen
 			leave = underFire && phantoms > 0 && (ttd < 1.5*b.P.LeaveTTD || hpFrac < 0.6)
 		}
-		if leave && b.P.RetreatRunMax > 0 && st.avoid && visibleFoe && !b.coverClose(ths, tgt) {
+		if leave && b.runGate(st) && visibleFoe && !b.coverClose(ths, tgt) {
 			leave = false // (see above: running is only worth it with cover seconds away)
 			b.standT = b.t
 		}
@@ -675,7 +675,7 @@ func (b *Bot) think(act *proto.Action) {
 			}
 		}
 		// a leg deeper into cover, once begun, is walked to its end unless it stops being cover
-		deeper := (b.P.RunOnRange > 0 || b.P.CoverMargin > 0) && st.avoid // (free-for-all stances only)
+		deeper := (b.P.RunOnRange > 0 || b.P.CoverMargin > 0) && (st.avoid || b.P.SquadDeep) // (free-for-all stances only)
 		deep := deeper && b.deepCell >= 0 && b.t-b.deepT < 8
 		if deep && (b.t-b.lastWeaponDT < 0.45 || !b.cellHidden(b.deepCell, ths)) {
 			deep = false // hit on the way, or it can be seen now: nearest cover first
@@ -1290,6 +1290,12 @@ func (b *Bot) cubeRun(tgt *threat, st stance, hpFrac float64) *Item {
 		if st.stealth {
 			maxD *= 0.5
 		}
+		if b.P.CubeRunMul > 0 {
+			maxD *= b.P.CubeRunMul
+		}
+		if b.P.CubeRunHP > 0 && hpFrac < b.P.CubeRunHP && d > 8 {
+			continue
+		}
 		if d > maxD || (d > 30 && hpFrac < 0.3) {
 			continue
 		}
@@ -1485,4 +1491,12 @@ func (b *Bot) seekTarget(st stance, hpFrac float64) (x, y float64, id int, ok bo
 	}
 	x, y, ok = b.roamGoal()
 	return x, y, -1, ok
+}
+
+// runGate: does the "only run with cover close" rule apply in this stance?
+func (b *Bot) runGate(st stance) bool {
+	if st.avoid {
+		return b.P.RetreatRunMax > 0
+	}
+	return b.P.SquadRunMax > 0
 }

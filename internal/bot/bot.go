@@ -173,6 +173,11 @@ type Params struct {
 	EdgeBand         float64 // in FFA stance, penalize hiding closer than EdgeBand*NextRadius to center (0 = off)
 	PracticeRim      float64 // practice rim-riding: prefer outer 85-90% of next circle while NextRadius >= 180 (0 = off)
 	RetreatPest      bool    // shoot plinking NPC drone while retreating if no enemy mech is engaged
+
+	SquadRunMax float64 // squad stance: only run for cover within this path length, else fight on (0 = always run)
+	SquadDeep   bool    // squad stance: walk on to deeper cover after the first hidden spot
+	CubeRunMul  float64 // scale how far we detour for cubes during a fight (0 = 1)
+	CubeRunHP   float64 // no cube detour during a fight below this hp fraction (0 = off)
 }
 
 func DefaultParams() Params {
@@ -300,6 +305,7 @@ func DefaultParams() Params {
 		RetreatPest:  true,
 		PracticeRim:  0.6,
 		LightKiteBoost: true,
+		CubeRunMul:     0.3, // shorter cube detours mid-fight (local sim +0.20 +/- 0.15 on 450 fresh matches)
 	}
 }
 

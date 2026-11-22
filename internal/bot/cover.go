@@ -55,6 +55,9 @@ func (b *Bot) coverClose(ths []threat, tgt *threat) bool {
 		return b.nearCoverOK
 	}
 	reach := b.P.RetreatRunMax
+	if !b.st.avoid && b.P.SquadRunMax > 0 {
+		reach = b.P.SquadRunMax
+	}
 	if tgt != nil && tgt.tr.Laser && b.has("laser") < 0 && b.P.RetreatRunLaser > reach {
 		reach = b.P.RetreatRunLaser
 	}
