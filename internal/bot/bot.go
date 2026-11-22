@@ -298,7 +298,12 @@ func DefaultParams() Params {
 		RearAvoidW:   35,
 		CoverReload:  true,
 		RetreatPest:  true,
-		PracticeRim:  0.6,
+		PracticeRim:  0.85,
+		// tuned in local sim (+0.54 paired over 160 matches vs E59): finish wounded targets, seek recent sightings
+		KillFocus: 2,
+		Seek:      10,
+		SeekRange: 320,
+		SeekHP:    0.65,
 	}
 }
 
